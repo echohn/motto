@@ -21,9 +21,14 @@ get '/motto/:category' do
   end
 end
 
+get '/motto_categories' do
+  headers site_headers
+  {categories: settings.motto.categories_detail}.to_json
+end
+
 
 def site_headers
-  {"Access-Control-Allow-Origin" => 'http://ops.conac.cn'}
+  {"Access-Control-Allow-Origin" => '*'}
 end
 
 

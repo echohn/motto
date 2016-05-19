@@ -25,6 +25,16 @@ class Motto
     Dir[File.join(@mottos_file_dir,"*.yml")].map{|x|File.basename(x,'.yml')}
   end
 
+  def categories_detail
+    {
+      'dev' => '开发类格言',
+      'ops' => '运维类格言',
+      'pmp' => '项目管理类格言',
+      'method' => '方法论',
+      'famous' => '名人名言'
+    }
+  end
+
 
   def need_update?(category)
     source_file_mtime = File.mtime(category_source_file(category))
