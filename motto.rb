@@ -2,62 +2,74 @@ require 'yaml'
 
 class Motto
 
+  class MottoCategory
+
+    MOTTOS_DIR = File.join(File.dirname(__FILE__),'mottos')
+
+    attr_reader :category
+
+    def initialize(category)
+      @category = category
+
+      @file =  File.join(MOTTOS_DIR,"#{@category}.yml")
+
+      unless File.exist? @file
+        raise "NOT FOUND FILE #{@file}"
+      end
+
+      @mtime = File.mtime @file
+      update
+    end
+
+    def mottos
+      if need_update?
+        update
+      end
+      @mottos
+    end
+
+    private
+
+    def need_update?
+      new_mtime = File.mtime @file
+      new_mtime > @mtime
+    end
+
+    def update
+      @mottos = YAML.load(IO.read(@file))
+    end
+
+  end
+
+  CATEGORIES_DETAIL = {
+    'dev' => '开发类格言',
+    'ops' => '运维类格言',
+    'pmp' => '项目管理类格言',
+    'method' => '方法论',
+    'famous' => '名人名言'
+  }
+
   def initialize
-    @mottos = {}
-    @mottos_file_dir = File.join(File.dirname(__FILE__),'mottos')
-  end
-
-  def sample
-    check_or_update_all
-    @mottos.values.map{|x|x[:mottos]}.flatten.sample
-  end
-
-  def category(category)
-    check_or_update(category)
-    @mottos[category][:mottos].sample
-  end
-
-  def category_source_file(category)
-    File.join(@mottos_file_dir,"#{category}.yml")
-  end
-
-  def categories
-    Dir[File.join(@mottos_file_dir,"*.yml")].map{|x|File.basename(x,'.yml')}
-  end
-
-  def categories_detail
-    {
-      'dev' => '开发类格言',
-      'ops' => '运维类格言',
-      'pmp' => '项目管理类格言',
-      'method' => '方法论',
-      'famous' => '名人名言'
-    }
-  end
-
-
-  def need_update?(category)
-    source_file_mtime = File.mtime(category_source_file(category))
-    mottos_mtime = @mottos[category][:updated_at]
-    source_file_mtime > mottos_mtime
-  end
-
-  def update(category)
-    source_file_mtime = File.mtime(category_source_file(category))
-    mottos = YAML.load(IO.read(category_source_file(category)))
-    @mottos[category] = {updated_at: source_file_mtime, mottos: mottos}
-    puts "########### #{category} file updated!"
-  end
-
-  def check_or_update(category)
-    if @mottos[category].nil?  or need_update?(category)
-      update(category)
+    @mottos = []
+    categories.each do |category|
+      @mottos << MottoCategory.new(category)
     end
   end
 
-  def check_or_update_all
-    categories.each do |category|
-      check_or_update(category)
+  def categories_detail
+    CATEGORIES_DETAIL
+  end
+
+  def categories
+    CATEGORIES_DETAIL.keys
+  end
+
+  def sample(category = nil)
+    if category
+      motto_category = @mottos.find{|x| x.category == category}
+      motto_category.mottos.sample
+    else
+      @mottos.map{|x| x.mottos }.flatten.sample
     end
   end
 
