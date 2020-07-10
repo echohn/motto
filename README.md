@@ -1,6 +1,6 @@
-# My Favorite Mottos
+# Mottos
 
-这里是我收集的一些我喜欢的格言，提供给我的博客，或是我 mac 的 today script 等进行 ajax 调用。
+收集的一些喜欢的格言, 提供接口给其他地方调用。
 
 ## 提供的几个方法
 
