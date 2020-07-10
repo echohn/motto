@@ -1,7 +1,8 @@
 require 'sinatra'
 require 'yaml'
 require 'json'
-require 'motto'
+
+require_relative 'lib/motto'
 
 set :motto, Motto.new
 
@@ -13,17 +14,17 @@ end
 get '/motto/:category' do
   headers site_headers
   category = params[:category].downcase
-  if settings.motto.categories.include? category
-    {motto: settings.motto.sample(category)}.to_json
+  if settings.motto.keys.include? category
+    { motto: settings.motto.sample(category) }.to_json
   else
     status 404
-    {ERROR: "Not Found category: #{category}"}.to_json
+    { ERROR: "Not Found category: #{category}" }.to_json
   end
 end
 
 get '/motto_categories' do
   headers site_headers
-  {categories: settings.motto.categories_detail}.to_json
+  { categories: settings.motto.categories_info }.to_json
 end
 
 
